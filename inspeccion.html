@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evaluar Dispositivo - ReeUtil</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #e2fff9;
+            /*Fondo Principal*/
+            /*background-color: #B9EBE0; /*Fondo Principal*/
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #012A2F;
+            color: white;
+        }
+
+        .titulo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .titulo:hover{
+            color: #DA8C5C;
+        }
+
+        .logo img {
+            height: 50px;
+            width: auto;
+            display: block;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            /* Espacio entre imagen y texto (si tuviera) */
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a,
+        .btn-login {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .nav-opctions:hover {
+            color: #DA8C5C;
+        }
+
+        /* Título principal */
+        h1 {
+            font-size: 2.8rem;
+            color: #177063;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 700;
+            border-bottom: 3px solid #23776A;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Párrafo principal */
+        p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: justify;
+            margin-bottom: 2rem;
+            color: #4b4a4a;
+        }
+
+        /* Subtítulo */
+        h2 {
+            font-size: 2rem;
+            color: #177063;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid #23776A;
+            display: inline-block;
+            padding-bottom: 0.3rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        label {
+            display: block;
+            margin-top: 1.2rem;
+            font-weight: 600;
+            color: #371900;
+        }
+
+        input,
+        select {
+            padding: 0.7rem;
+            width: 100%;
+            margin-top: 0.4rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #70AF4C;
+            outline: none;
+        }
+
+        .btn {
+            background-color: #70AF4C;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            margin-top: 2rem;
+            display: block;
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn:hover {
+            background-color: #00AF09;
+        }
+
+        .info {
+            background-color: #e8f5e9;
+            border-left: 5px solid #616A13;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+        }
+
+        .alert {
+            background-color: #BA1E1E;
+            color: white;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 2rem;
+        }
+
+        /* Responsividad */
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .table th,
+            .table td {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">
+            <img src="eco.png" alt="ReeUtil Logo">
+        </div>
+        <div class="titulo">ReeUtil</div>
+        <div class="nav-links">
+            <a class="nav-opctions" href="Inicio.html">Inicio</a>
+            <a class="nav-opctions" href="#">Sobre Nosotros</a>
+            <a class="nav-opctions" href="#">Cotizar</a>
+            <a class="nav-opctions" href="inspeccion.html">Inspecciones</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Diagnostico de Dispositivo</h1>
+        <h2>Proyecto ReeUtil</h2>
+
+        <div id="datos-dispositivo">
+            <p><strong>ID:</strong> 00123</p>
+            <p><strong>Nombre:</strong> Laptop Acer Aspire</p>
+            <p>
+                <label for="tipo-dispositivo"><strong>Tipo:</strong></label><br>
+                <select id="tipo-dispositivo" onchange="mostrarCriterios()">
+                    <option value="">Seleccionar</option>
+                    <option value="laptop">Laptop</option>
+                    <option value="celular">Celular</option>
+                    <option value="tablet">Tablet</option>
+                </select>
+            </p>
+        </div>
+
+        <div id="criterios-container" class="criterios"></div>
+
+        <button class="btn" onclick="evaluar()">Evaluar</button><br />
+
+        <div class="info">
+            <p>Recuerda que para evaluar el dispositivo, debes seleccionar los criterios adecuados y presiona el botón
+                "Evaluar".</p>
+        </div>
+
+    </div>
+
+    <script>
+        const criteriosPorTipo = {
+            laptop: [
+                '¿Enciende correctamente?',
+                '¿Pantalla en buen estado?',
+                '¿Batería funcional?',
+                '¿Cargador incluido?'
+            ],
+            celular: [
+                '¿Pantalla sin grietas?',
+                '¿Carga correctamente?',
+                '¿Botones funcionales?',
+                '¿Liberado de cuenta?'
+            ],
+            tablet: [
+                '¿Pantalla táctil funcional?',
+                '¿Batería aceptable?',
+                '¿Sin daños externos?',
+                '¿Lapiz funcional?',
+                '¿Con cargador?'
+            ]
+        };
+
+        function mostrarCriterios() {
+            const tipo = document.getElementById('tipo-dispositivo').value;
+            const contenedor = document.getElementById('criterios-container');
+            contenedor.innerHTML = '';
+
+            if (criteriosPorTipo[tipo]) {
+                criteriosPorTipo[tipo].forEach(criterio => {
+                    contenedor.innerHTML += `
+                        <label><input type="checkbox" name="criterios" value="${criterio}"> ${criterio}</label>
+                    `;
+                });
+            }
+        }
+
+        function evaluar() {
+            const checks = document.querySelectorAll('input[name="criterios"]:checked');
+            const total = checks.length;
+
+            alert(`Criterios marcados: ${total}\n${Array.from(checks).map(c => c.value).join('\n')}`);
+        }
+    </script>
+
+</body>
+
+</html>
