@@ -8,6 +8,9 @@ public class PaginaInicioApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PaginaInicioApplication.class, args);
+		int invento = 12;
+		
+		
 	}
 
 }
