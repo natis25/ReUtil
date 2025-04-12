@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Tipo Dispositivo</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #B9EBE0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #012A2F;
+            color: white;
+        }
+
+        .titulo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .titulo:hover {
+            color: #DA8C5C;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a,
+        .btn-login {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .nav-opctions:hover {
+            color: #DA8C5C;
+        }
+
+        .btn-login {
+            background-color: #23776A;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Estilo Tabla */
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #23776A;
+            color: white;
+        }
+
+        /* Formulario */
+        form {
+            width: 80%;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            width: 200px;
+        }
+
+        button {
+            padding: 8px 12px;
+            background-color: #012A2F;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #23776A;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="titulo">ReeUtil | Tipos Dispositivos</div>
+    </nav>
+
+    <h2 style="text-align:center;">Listado de Tipos de Dispositivos</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="tipo : ${listaTipoDispositivo}">
+                <td th:text="${tipo.id}"></td>
+                <td th:text="${tipo.nombre}"></td>
+                <td th:text="${tipo.aceptado}"></td>
+                <td>
+                    <a th:href="@{/tipoDispositivo/editar/{id}(id=${tipo.id})}">
+                        <button type="submit" style="background-color:#2c6746;">Editar</button>
+                    </a> |
+                    <a th:href="@{/tipoDispositivo/eliminar/{id}(id=${tipo.id})}"
+                        onclick="return confirm('¿Estás seguro que querés eliminarlo?');">
+                        <button type="submit" style="background-color:#ed4628;">Eliminar</button>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <form id="formAgregar">
+        <input type="text" id="nombre" placeholder="Nombre del Tipo" required>
+        <input type="text" id="aceptado" placeholder="Aceptado (true/false)" required>
+        
+        <button type="submit">Agregar</button>
+    </form>
+
+    <script>
+        const API_URL = '/tipoDispositivo';  // cambia esto si tu endpoint es diferente
+
+        // Mostrar todos
+        async function cargarTipos() {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+
+            const tabla = document.querySelector('#tablaTipos tbody');
+            tabla.innerHTML = "";
+
+            data.forEach(tipo => {
+                tabla.innerHTML += `
+            <tr>
+                <td>${tipo.idTipo}</td>
+                <td>${tipo.nombreTipo}</td>
+                <td>${tipo.aceptado}</td>
+                <td>
+                    <button onclick="eliminarTipo(${tipo.idTipo})">Eliminar</button>
+                </td>
+            </tr>
+        `;
+            });
+        }
+
+        // Agregar nuevo
+        document.getElementById('formAgregar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const nombre = document.getElementById('nombre').value;
+            const aceptado = document.getElementById('aceptado').value === 'true';
+
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombreTipo: nombre, aceptado: aceptado })
+            });
+
+            cargarTipos();
+            e.target.reset();
+        });
+
+        // Eliminar
+        async function eliminarTipo(id) {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            cargarTipos();
+        }
+
+        cargarTipos();
+    </script>
+
+</body>
+
+</html>
