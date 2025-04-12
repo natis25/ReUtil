@@ -23,7 +23,7 @@ public class Inspeccion {
             "¿Bateria aceptable?",
             "¿Sin daños externos?",
             "¿Lapiz funcional?",
-            "¿Con cargador?"
+            "¿Cargador incluido?"
         ));
     }
 
