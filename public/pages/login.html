@@ -1,0 +1,14 @@
+<!-- public/pages/login.html -->
+<form action="../../services/sesion/api/login.php" method="POST">
+    <input type="text" name="email" placeholder="Correo" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    
+    <!-- selector para cliente Empleado -->
+    <select name="tipo_usuario" required>
+      <option value="cliente">Cliente</option> 
+      <option value="empleado">Empleado</option>
+    </select>
+  
+    <button type="submit">Iniciar Sesión</button>
+  </form>
+  
