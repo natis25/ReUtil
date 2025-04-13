@@ -68,7 +68,6 @@ nav {
 .container {
     max-width: 900px;
     margin: auto;
-    padding: 1rem;
     color: #333;
 }
 
@@ -120,3 +119,5 @@ h2 {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border: 1px solid #DA8C5C;
 }
+
+
