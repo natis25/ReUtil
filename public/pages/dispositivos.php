@@ -35,8 +35,10 @@ $tipos = json_decode(@file_get_contents('http://'.$_SERVER['HTTP_HOST'].'/Reeuti
     
     <div class="container">
         <h1>Gestión de Dispositivos</h1>
+        <br>
+        <br>
         
-        <button class="btn btn-primary mb-3" onclick="abrirModal(null)">
+        <button class="btn-login" onclick="abrirModal(null)">
             Agregar Nuevo Dispositivo
         </button>
         

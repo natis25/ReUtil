@@ -109,7 +109,7 @@ $marcas = is_array($marcas) ? $marcas : [];
         </div>
         
         <div id="marcaModal" class="modal-backdrop" style="display: none;">
-            <div class="modal-dialog" style="margin: 10% auto;">
+            <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalTitulo">Agregar Marca</h5>

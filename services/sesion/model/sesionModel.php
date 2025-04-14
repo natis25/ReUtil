@@ -1,22 +1,32 @@
 <!-- services/sesion/model/SesionModel.php -->
 <?php
+
+
 class SesionModel {
   private $conn;
 
+  // opcion que funciona
+  // public function __construct() 
+  // {
+  //   // Conexión a la base de datos
+  //   $servidor = "localhost";
+  //   $usuario = "root";
+  //   $contrasena = "";
+  //   $basedatos = "reeutil";
+
+  //   $conexion = new mysqli($servidor, $usuario, $contrasena, $basedatos);
+
+  //   if ($conexion->connect_error) {
+  //       die("Error de conexión: " . $conexion->connect_error);
+  //   }
+  //   $this->conn = $conexion;
+  // }
+
+  // Alternativa
   public function __construct() {
-    // Conexión a la base de datos
-    $servidor = "localhost";
-    $usuario = "root";
-    $contrasena = "";
-    $basedatos = "reeutil";
-
-    $conexion = new mysqli($servidor, $usuario, $contrasena, $basedatos);
-
-    if ($conexion->connect_error) {
-        die("Error de conexión: " . $conexion->connect_error);
-    }
-    $this->conn = $conexion;
-
+    include_once('../../../core/conexion.php');
+    global $conexion;        // Usamos la variable como fue definida
+    $this->conn = $conexion; // Guardamos en el atributo
   }
 
   public function validarUsuario($email, $password, $tipoUsuario) {
