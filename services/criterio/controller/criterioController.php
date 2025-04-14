@@ -1,11 +1,12 @@
 <?php
-require_once(__DIR__ . '/../model/EmpleadoModel.phpModel.php');
+require_once(__DIR__ . '/../model/criterioModel.phpModel.php');
 
-class EmpleadoController {
+require_once(__DIR__ . '/../model/Model.phpModel.php');
+class CriterioController {
     private $model;
 
     public function __construct() {
-        $this->model = new EmpleadoModel();
+        $this->model = new CriterioModel();
     }
 
     public function handleRequest($method, $data) {
@@ -20,17 +21,17 @@ class EmpleadoController {
 
             case 'POST':
                 $json = json_decode(file_get_contents("php://input"), true);
-                echo json_encode($this->model->create($json['tipo_empleado']));
+                echo json_encode($this->model->create($json['criterio']));
                 break;
 
             case 'PUT':
                 $json = json_decode(file_get_contents("php://input"), true);
-                echo json_encode($this->model->update($json['id_empleado'], $json['tipo_empleado']));
+                echo json_encode($this->model->update($json['id_criterio'], $json['criterio']));
                 break;
 
             case 'DELETE':
                 $json = json_decode(file_get_contents("php://input"), true);
-                echo json_encode($this->model->delete($json['id_empleado']));
+                echo json_encode($this->model->delete($json['id_criterio']));
                 break;
 
             default:

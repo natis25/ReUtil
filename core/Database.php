@@ -3,7 +3,7 @@ class Database {
     private static $host = 'localhost';
     private static $db   = 'ReeUtil';
     private static $user = 'root';
-    private static $pass = ''; // Cambiá esto si tenés una contraseña
+    private static $pass = ''; 
     private static $charset = 'utf8mb4';
 
     private static $pdo = null;
