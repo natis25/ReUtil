@@ -1,0 +1,8 @@
+Array
+(
+    [id_dispositivo] => Tab A7
+    [descripcion] => no tiene lapiz
+    [monto_ofrecido] => 1300
+    [id_sucursal] => 1
+    [trasferencia] => 1
+)

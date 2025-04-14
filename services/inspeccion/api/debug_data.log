@@ -1,0 +1,15 @@
+Array
+(
+    [descripcion] => no tiene lapiz
+    [monto_ofrecido] => 1330
+    [trasferencia] => 0
+    [id_dispositivo] => Tab A7
+    [id_sucursal] => 2
+    [caja_enviada] => 
+    [reciclaje] => 
+    [monto_final] => 
+    [revision] => 
+    [fecha_inspeccion] => 
+    [id_empleado] => 
+    [id_cliente] => 
+)
