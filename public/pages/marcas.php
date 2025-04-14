@@ -39,6 +39,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 $marcas = is_array($marcas) ? $marcas : [];
 ?>
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -59,10 +60,11 @@ $marcas = is_array($marcas) ? $marcas : [];
         <a class="titulo" href="inicio.php">ReeUtil</a>
         <div class="nav-links">
             <a class="nav-opctions" href="inicio.php">Inicio</a>
-            <a class="nav-opctions" href="#">Cotizar</a>
-            <a class="nav-opctions" href="inspeccion.php">Inspecciones</a>
+            <a class="nav-opctions" href="#">Conoce más de ReeUtil</a>
         </div>
-        <button class="btn-login">Iniciar Sesión</button>
+        <a href="login.html">
+            <button class="btn-login">Iniciar Sesión</button>
+        </a>
     </nav>
     <div class="container">
         <h1>Gestionar de Marcas</h1>
@@ -108,11 +110,11 @@ $marcas = is_array($marcas) ? $marcas : [];
             </table>
         </div>
         
-        <div id="marcaModal" class="modal-backdrop" style="display: none;">
+        <div id="marcaModal" style="display: none;">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalTitulo">Agregar Marca</h5>
+                        <h2 class="" id="modalTitulo">Agregar Marca</h2>
                         <button 
                             type="button" 
                             class="btn-close" 
@@ -136,12 +138,12 @@ $marcas = is_array($marcas) ? $marcas : [];
                         <div class="modal-footer">
                             <button 
                                 type="button" 
-                                class="btn btn-secondary" 
+                                class="buttonC"
                                 onclick="cerrarModal()"
                             >
                                 Cancelar
                             </button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
+                            <button class="buttonG" type="submit">Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -193,3 +195,33 @@ $marcas = is_array($marcas) ? $marcas : [];
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+<style>
+    .buttonG{
+        padding: 10px 20px;
+        margin-left: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 6px;
+        font-size: 1rem;
+        height: 40px;
+    }
+
+    .buttonC{
+        padding: 10px 20px;
+        background-color:rgb(119, 127, 129);
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 6px;
+        font-size: 1rem;
+        height: 40px;
+    }
+
+    .buttonC:hover{
+        background-color:rgb(79, 80, 80);
+    }
+
+
+</style>

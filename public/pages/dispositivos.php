@@ -2,7 +2,6 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Obtener dispositivos
 $api_url = 'http://'.$_SERVER['HTTP_HOST'].'/Reeutil/services/dispositivo/dispositivoApi.php';
 $api_response = @file_get_contents($api_url);
 
@@ -16,7 +15,6 @@ if ($api_response === false) {
 
 $dispositivos = json_decode($api_response, true) ?: [];
 
-// Obtener marcas y tipos (necesitarás APIs adicionales para estos)
 $marcas = json_decode(@file_get_contents('http://'.$_SERVER['HTTP_HOST'].'/Reeutil/services/marca/marcaApi.php'), true) ?: [];
 $tipos = json_decode(@file_get_contents('http://'.$_SERVER['HTTP_HOST'].'/Reeutil/services/tipo/tipoApi.php'), true) ?: [];
 ?>
@@ -31,8 +29,22 @@ $tipos = json_decode(@file_get_contents('http://'.$_SERVER['HTTP_HOST'].'/Reeuti
     <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
-    <!-- Tu navegación aquí -->
-    
+    <nav>
+      <div class="logo">
+          <a href="inicio.php">
+              <img src="images/eco.png" style="width: 50px; height: 50px"; alt="ReeUtil Logo">
+          </a>
+      </div>
+      <a class="titulo" href="inicio.php">ReeUtil</a>
+      <div class="nav-links">
+          <a class="nav-opctions" href="inicio.php">Inicio</a>
+          <a class="nav-opctions" href="#">Conoce más de ReeUtil</a>
+      </div>
+      <a href="login.html">
+      <button class="btn-login">Iniciar Sesión</button>
+      </a>
+    </nav>
+
     <div class="container">
         <h1>Gestión de Dispositivos</h1>
         <br>
@@ -74,8 +86,7 @@ $tipos = json_decode(@file_get_contents('http://'.$_SERVER['HTTP_HOST'].'/Reeuti
             </table>
         </div>
         
-        <!-- Modal para agregar/editar -->
-        <div id="dispositivoModal" class="modal-backdrop" style="display: none;">
+        <div id="dispositivoModal" style="display: none;">
             <div class="modal-dialog" style="margin: 10% auto;">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -165,3 +176,33 @@ $tipos = json_decode(@file_get_contents('http://'.$_SERVER['HTTP_HOST'].'/Reeuti
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+<style>
+    .buttonG{
+        padding: 10px 20px;
+        margin-left: 20px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 6px;
+        font-size: 1rem;
+        height: 40px;
+    }
+
+    .buttonC{
+        padding: 10px 20px;
+        background-color:rgb(119, 127, 129);
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 6px;
+        font-size: 1rem;
+        height: 40px;
+    }
+
+    .buttonC:hover{
+        background-color:rgb(79, 80, 80);
+    }
+
+
+</style>
