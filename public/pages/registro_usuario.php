@@ -14,13 +14,14 @@ while ($fila = $resultado->fetch_assoc()) {
 <head>
   <meta charset="UTF-8">
   <title>Registro de Usuario</title>
+  <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
   <h2>Registro de Usuario</h2>
   <form action="../../services/sesion/api/registrar_usuario.php" method="POST">
 
     <label for="tipo_usuario">Tipo de usuario:</label><br>
-    <select name="tipo_usuario" id="tipo_usuario" required>
+    <select name="tipo_usuario" id="tipo_usuario" required onchange="toggleCampos()">
       <option value="cliente">Cliente</option> 
       <option value="empleado">Empleado</option>
     </select>
@@ -48,8 +49,10 @@ while ($fila = $resultado->fetch_assoc()) {
     <label>Celular:</label><br>
     <input type="text" name="celular" required><br><br>
 
+    <div id="campo_direccion">
     <label>Dirección:</label><br>
-    <input type="text" name="direccion" required><br><br>
+    <input type="text" name="direccion"><br><br>
+    </div>
 
     <label>Contraseña:</label><br>
     <input type="password" name="contrasena" required><br><br>
@@ -58,12 +61,13 @@ while ($fila = $resultado->fetch_assoc()) {
   </form>
 
   <script>
-    const tipoUsuario = document.getElementById('tipo_usuario');
-    const sucursalContainer = document.getElementById('sucursal_container');
-
-    tipoUsuario.addEventListener('change', function() {
-      sucursalContainer.style.display = (this.value === 'empleado') ? 'block' : 'none';
-    });
+    function toggleCampos() {
+      const tipo = document.getElementById("tipo_usuario").value;
+      // Mostrar u ocultar el campo de dirección según el tipo de usuario
+      document.getElementById("campo_direccion").style.display = tipo === "cliente" ? "block" : "none";
+      // Mostrar u ocultar el campo de sucursal según el tipo de usuario
+      document.getElementById("sucursal_container").style.display = tipo === "empleado" ? "block" : "none";
+    }
   </script>
 </body>
 </html>

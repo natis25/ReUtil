@@ -2,17 +2,23 @@
 include_once('../model/RegistroModel.php');
 
 class RegistroController {
-  public function registrar($nombre, $correo, $celular, $direccion, $contrasena, $fecha) {
-    $modelo = new RegistroModel();
-    $resultado = $modelo->registrarCliente($nombre, $correo, $celular, $direccion, $contrasena, $fecha);
-
-    if ($resultado === "ok") {
-      echo "✅ Usuario registrado con éxito.";
-    } elseif ($resultado === "existe") {
-      echo "⚠️ El correo ya está en uso.";
+  public function registrar($tipo, $nombre, $correo, $celular, $contrasena, $fecha, $direccion = null, $sucursal = null) {
+    $model = new RegistroModel();
+    $tabla = $tipo === 'empleado' ? 'empleado' : 'cliente';
+  
+    if ($model->correoExiste($correo, $tabla)) {
+      echo "El correo ya está registrado como $tipo.";
+      return false;
+    }
+  
+    $hash = password_hash($contrasena, PASSWORD_DEFAULT);
+  
+    if ($tipo === 'empleado') {
+      return $model->registrarEmpleado($nombre, $correo, $celular, $hash, $fecha, $sucursal);
     } else {
-      echo "❌ Error al registrar usuario.";
+      return $model->registrarCliente($nombre, $correo, $celular, $direccion, $hash, $fecha);
     }
   }
+  
 }
 ?>

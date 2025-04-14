@@ -20,19 +20,20 @@ class RegistroModel {
   }
 
   public function registrarCliente($nombre, $correo, $celular, $direccion, $contrasena, $fecha) {
-    // Si el correo ya existe, no hacer el insert
-    if ($this->correoExiste($correo)) {
-      return "existe";
-    }
-
-    $hash = password_hash($contrasena, PASSWORD_DEFAULT);
-
     $query = "INSERT INTO cliente (nombre_cliente, correo, celular, direccion, contrasena, fecha_registro)
               VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $this->conn->prepare($query);
-    $stmt->bind_param("ssssss", $nombre, $correo, $celular, $direccion, $hash, $fecha);
+    $stmt->bind_param("ssssss", $nombre, $correo, $celular, $direccion, $contrasena, $fecha);
+    return $stmt->execute();
+  }
+  
 
-    return $stmt->execute() ? "ok" : "error";
+  public function registrarEmpleado($nombre, $correo, $celular, $contrasena, $fecha, $id_sucursal) {
+    $query = "INSERT INTO empleado (nombre_empleado, correo, celular, contrasena, fecha_registro, Sucursal_id_sucursal)
+              VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $this->conn->prepare($query);
+    $stmt->bind_param("sssssi", $nombre, $correo, $celular, $contrasena, $fecha, $id_sucursal);
+    return $stmt->execute();
   }
 }
 ?>
