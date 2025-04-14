@@ -21,7 +21,7 @@ class SesionController {
         echo "Ingresaste como Empleado";
       }
     } else {
-      // Credenciales incorrectas
+      
       echo "Credenciales incorrectas.";
     }
   }
