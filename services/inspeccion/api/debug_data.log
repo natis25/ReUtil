@@ -1,15 +1,15 @@
 Array
 (
-    [descripcion] => no tiene lapiz
-    [monto_ofrecido] => 1330
+    [descripcion] => algunas teclas no funcionan
+    [monto_ofrecido] => 12000
     [trasferencia] => 0
-    [id_dispositivo] => Tab A7
-    [id_sucursal] => 2
-    [caja_enviada] => 
-    [reciclaje] => 
-    [monto_final] => 
-    [revision] => 
-    [fecha_inspeccion] => 
+    [id_dispositivo] => 6
+    [id_sucursal] => Sucursal Sur
+    [caja_enviada] => 0
+    [revision] => 0
+    [reciclaje] => 0
+    [monto_final] => 0
+    [fecha_inspeccion] => 2025-04-14 23:58:44
     [id_empleado] => 
     [id_cliente] => 
 )

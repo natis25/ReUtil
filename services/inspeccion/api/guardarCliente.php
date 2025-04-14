@@ -13,6 +13,8 @@ $data = [
     'trasferencia' => $_POST['trasferencia'] === 'true' ? 1 : 0,
     'id_dispositivo' => $_POST['id_dispositivo'],
     'id_sucursal' => $_POST['id_sucursal'],
+    'caja_enviada' => 0,
+    'revision' => 0
 ];
 
 $exito = guardarInspeccionClienteController::ejecutar($data);
