@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../../core/Conexion.php');
+require_once(__DIR__ . '/../../../core/Conexion1.php');
 
 class tipoDispositivo
 {
