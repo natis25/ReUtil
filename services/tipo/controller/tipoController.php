@@ -1,11 +1,11 @@
 <?php
-require_once(__DIR__ . '/../model/DispositivoModel.php');
+require_once(__DIR__ . '/../model/TipoModel.php');
 
-class DispositivoController {
+class TipoController {
     private $model;
 
     public function __construct() {
-        $this->model = new DispositivoModel();
+        $this->model = new TipoModel();
     }
 
     public function handleRequest($method, $data) {
@@ -14,28 +14,28 @@ class DispositivoController {
                 if (isset($data['id'])) {
                     echo json_encode($this->model->getById($data['id']));
                 } else {
-                    echo json_encode($this->model->getAll());
+                    // Solo devolvemos tipos aceptados (aceptado = 1)
+                    echo json_encode($this->model->getAllAccepted());
                 }
                 break;
 
-case 'POST':
-    $json = json_decode(file_get_contents("php://input"), true);
-    $success = $this->model->create($json['modelo'], $json['tipo_dispositivo_id'], $json['marca_id']);
-    echo json_encode(['success' => $success]);
-    break;
+            case 'POST':
+                $json = json_decode(file_get_contents("php://input"), true);
+                echo json_encode($this->model->create($json['nombre_tipo']));
+                break;
+
             case 'PUT':
                 $json = json_decode(file_get_contents("php://input"), true);
                 echo json_encode($this->model->update(
-                    $json['id_dispositivo'],
-                    $json['modelo'],
-                    $json['tipo_dispositivo_id'],
-                    $json['marca_id']
+                    $json['id_tipo'],
+                    $json['nombre_tipo'],
+                    $json['aceptado']
                 ));
                 break;
 
             case 'DELETE':
                 $json = json_decode(file_get_contents("php://input"), true);
-                echo json_encode($this->model->delete($json['id_dispositivo']));
+                echo json_encode($this->model->delete($json['id_tipo']));
                 break;
 
             default:

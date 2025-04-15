@@ -1,20 +1,20 @@
 <?php
 header('Content-Type: application/json');
 
-$id_dispositivo = $_POST['id_dispositivo'] ?? null;
-$modelo = $_POST['modelo'];
-$tipo_dispositivo_id = $_POST['tipo_dispositivo_id'];
-$marca_id = $_POST['marca_id'];
+// Verificación básica de datos
+if(empty($_POST['modelo']) || empty($_POST['tipo_dispositivo_id']) || empty($_POST['marca_id'])) {
+    die(json_encode(['error' => 'Datos incompletos']));
+}
 
 $data = [
-    'id_dispositivo' => $id_dispositivo,
-    'modelo' => $modelo,
-    'tipo_dispositivo_id' => $tipo_dispositivo_id,
-    'marca_id' => $marca_id
+    'id_dispositivo' => $_POST['id_dispositivo'] ?? null,
+    'modelo' => $_POST['modelo'],
+    'tipo_dispositivo_id' => $_POST['tipo_dispositivo_id'],
+    'marca_id' => $_POST['marca_id']
 ];
 
 $url = 'http://'.$_SERVER['HTTP_HOST'].'/Reeutil/services/dispositivo/dispositivoApi.php';
-$method = empty($id_dispositivo) ? 'POST' : 'PUT';
+$method = empty($data['id_dispositivo']) ? 'POST' : 'PUT';
 
 $options = [
     'http' => [
@@ -27,6 +27,7 @@ $options = [
 $context = stream_context_create($options);
 $result = file_get_contents($url, false, $context);
 
-header('Location: dispositivos.php');
+// Redirigir con parámetro de éxito
+header('Location: dispositivos.php?success=1');
 exit;
 ?>
