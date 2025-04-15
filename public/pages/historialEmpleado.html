@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Inspecciones</title>
+    <link rel="stylesheet" href="../static/style.css">
+    
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <a href="#" class="titulo">Gestión de Dispositivos</a>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-opctions">Inicio</a>
+            <a href="#" class="nav-opctions">Historial</a>
+            <button class="btn-login">Login</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Historial de Inspecciones</h1>
+        <div class="filtros">
+            <label for="empleadoId">ID de Empleado:</label>
+            <input type="number" id="empleadoId" placeholder="Ingrese ID de empleado">
+            <button id="btnBuscar" class="btn-submit">Buscar</button>
+        </div>
+        
+        <table id="inspeccionesTable">
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th>Monto Ofrecido</th>
+                    <th>Forma de Pago</th>
+                    <th>Tipo de Transacción</th>
+                    <th>Monto Final</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const apiUrl = 'http://localhost/Reeutil/api/gateway.php?service=inspeccionga';
+        const inspeccionesTable = document.querySelector('#inspeccionesTable tbody');
+        const btnBuscar = document.getElementById('btnBuscar');
+        const empleadoIdInput = document.getElementById('empleadoId');
+
+        // Cargar inspecciones al hacer clic en Buscar
+        btnBuscar.addEventListener('click', loadInspecciones);
+
+        // Función para cargar las inspecciones
+        async function loadInspecciones() {
+            const empleadoId = empleadoIdInput.value.trim();
+            
+            if (!empleadoId) {
+                alert('Por favor ingrese un ID de empleado');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}&empleado_id=${empleadoId}`);
+                if (!response.ok) {
+                    throw new Error('Error al obtener los datos');
+                }
+                const data = await response.json();
+                
+                inspeccionesTable.innerHTML = '';
+                
+                if (data.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="6" style="text-align: center;">No se encontraron inspecciones para este empleado</td>`;
+                    inspeccionesTable.appendChild(row);
+                    return;
+                }
+                
+                data.forEach(inspeccion => {
+                    const row = document.createElement('tr');
+                    
+                    // Formatear los datos para mostrar
+                    const formaPago = inspeccion.transferencia == 1 ? 
+                        '<span class="transferencia">Transferencia</span>' : 
+                        '<span class="cheque">Cheque</span>';
+                    
+                    const tipoTransaccion = inspeccion.reciclaje == 1 ? 
+                        '<span class="reciclado">Reciclado</span>' : 
+                        '<span class="vendido">Vendido</span>';
+                    
+                    const montoOfrecido = `<span class="monto">$${parseFloat(inspeccion.monto_ofrecido).toFixed(2)}</span>`;
+                    const montoFinal = `<span class="monto">$${parseFloat(inspeccion.monto_final).toFixed(2)}</span>`;
+                    
+                    // Formatear fecha (si es necesario)
+                    const fecha = new Date(inspeccion.fecha_inspeccion).toLocaleDateString();
+                    
+                    row.innerHTML = `
+                        <td>${inspeccion.descripcion}</td>
+                        <td>${montoOfrecido}</td>
+                        <td>${formaPago}</td>
+                        <td>${tipoTransaccion}</td>
+                        <td>${montoFinal}</td>
+                        <td>${fecha}</td>
+                    `;
+                    inspeccionesTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                inspeccionesTable.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #dc3545;">
+                            Error al cargar los datos: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

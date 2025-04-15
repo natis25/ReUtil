@@ -1,0 +1,15 @@
+Array
+(
+    [descripcion] => no funciona la pantalla
+    [monto_ofrecido] => 5000
+    [trasferencia] => 0
+    [id_dispositivo] => 2
+    [id_sucursal] => Sucursal Central
+    [caja_enviada] => 0
+    [revision] => 0
+    [reciclaje] => 0
+    [monto_final] => 0
+    [fecha_inspeccion] => 2025-04-15 00:40:58
+    [id_empleado] => 
+    [id_cliente] => 
+)

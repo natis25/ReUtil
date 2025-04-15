@@ -12,8 +12,6 @@ if ($resultado && $resultado->num_rows > 0) {
 }
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -34,14 +32,14 @@ if ($resultado && $resultado->num_rows > 0) {
         <a class="titulo" href="inicio.php">ReeUtil</a>
         <div class="nav-links">
             <a class="nav-opctions" href="inicio.php">Inicio</a>
-            <a class="nav-opctions" href="#">Sobre Nosotros</a>
-            <a class="nav-opctions" href="#">Cotizar</a>
-            <a class="nav-opctions" href="inspeccion.php">Inspecciones</a>
+            <a class="nav-opctions" href="#">Conoce más de ReeUtil</a>
         </div>
+        <a href="login.html">
         <button class="btn-login">Iniciar Sesión</button>
+        </a>
     </nav>
 
-    <div class="container">
+    <div class="container1">
         <h1>Proyecto ReeUtil</h1>
         <p>ReeUtil es una plataforma diseñada para facilitar la gestión de equipos electrónicos que pueden tener una
             segunda vida. Nuestro objetivo es ayudar a personas y empresas a dar un mejor destino a sus dispositivos, ya sea 

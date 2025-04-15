@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tipos de Dispositivo</title>
+    <link rel="stylesheet" href="../static/style.css">
+    
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <a href="#" class="titulo">Gestión de Dispositivos</a>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-opctions">Inicio</a>
+            <a href="#" class="nav-opctions">Tipos</a>
+            <a href="#" class="nav-opctions">Dispositivos</a>
+            <button class="btn-login">Login</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-actions">
+            <h1>Tipos de Dispositivo</h1>
+            <a href="nuevoTipo.html" class="btn-crear">Crear Nuevo Tipo</a>
+        </div>
+        
+        <table id="tiposTable">
+            <thead>
+                <tr>
+                    <th>Nombre del Tipo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Modal para cambiar estado -->
+    <div id="estadoModal" class="modal">
+        <div class="modal-content">
+            <h2>Confirmar Cambio de Estado</h2>
+            <p id="modalMessage"></p>
+            <div class="modal-buttons">
+                <button id="modalCancel" class="modal-btn cancel">Cancelar</button>
+                <button id="modalConfirm" class="modal-btn confirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = 'http://localhost/Reeutil/api/gateway.php?service=tipodispositivo';
+        const tiposTable = document.querySelector('#tiposTable tbody');
+        const estadoModal = document.getElementById('estadoModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalCancel = document.getElementById('modalCancel');
+        const modalConfirm = document.getElementById('modalConfirm');
+        
+        let currentTipoId = null;
+        let currentEstado = null;
+
+        // Cargar tipos al iniciar
+        document.addEventListener('DOMContentLoaded', loadTipos);
+
+        // Función para cargar los tipos
+        async function loadTipos() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('Error al obtener los tipos');
+                }
+                const data = await response.json();
+                
+                tiposTable.innerHTML = '';
+                if (data.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="3" style="text-align: center;">No hay tipos de dispositivo registrados</td>`;
+                    tiposTable.appendChild(row);
+                    return;
+                }
+                
+                data.forEach(tipo => {
+                    const row = document.createElement('tr');
+                    const estadoClass = tipo.aceptado ? 'aceptado' : 'no-aceptado';
+                    const estadoText = tipo.aceptado ? 'Aceptado' : 'No Aceptado';
+                    
+                    row.innerHTML = `
+                        <td>${tipo.nombre_tipo}</td>
+                        <td><span class="estado ${estadoClass}">${estadoText}</span></td>
+                        <td>
+                            <button class="btn-cambiar" onclick="showCambiarEstadoModal(${tipo.id_tipo}, ${tipo.aceptado}, '${tipo.nombre_tipo}')">
+                                Cambiar estado
+                            </button>
+                        </td>
+                    `;
+                    tiposTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error al cargar tipos:', error);
+                alert('Error al cargar los tipos de dispositivo: ' + error.message);
+            }
+        }
+
+        // Mostrar modal para cambiar estado
+        function showCambiarEstadoModal(id, estado, nombre) {
+            currentTipoId = id;
+            currentEstado = estado;
+            
+            const nuevoEstado = !estado;
+            const estadoActualText = estado ? 'Aceptado' : 'No aceptado';
+            const estadoNuevoText = nuevoEstado ? 'Aceptado' : 'No aceptado';
+            
+            modalMessage.innerHTML = `
+                <strong>Tipo:</strong> ${nombre}<br>
+                <strong>Estado actual:</strong> <span class="${estado ? 'aceptado' : 'no-aceptado'}">${estadoActualText}</span><br>
+                <strong>Nuevo estado:</strong> <span class="${nuevoEstado ? 'aceptado' : 'no-aceptado'}">${estadoNuevoText}</span>
+            `;
+            estadoModal.style.display = 'block';
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            estadoModal.style.display = 'none';
+        }
+
+        // Eventos del modal
+        modalCancel.addEventListener('click', closeModal);
+        modalConfirm.addEventListener('click', async () => {
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id_tipo: currentTipoId,
+                        aceptar: true
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    loadTipos(); // Recargar la tabla
+                    closeModal();
+                } else {
+                    throw new Error(data.error || 'Error al cambiar el estado');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            }
+        });
+
+        // Cerrar modal al hacer clic fuera
+        window.addEventListener('click', (event) => {
+            if (event.target === estadoModal) {
+                closeModal();
+            }
+        });
+
+        // Hacer función accesible globalmente
+        window.showCambiarEstadoModal = showCambiarEstadoModal;
+    </script>
+</body>
+</html>

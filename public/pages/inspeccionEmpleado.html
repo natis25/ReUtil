@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Inspección del Empleado</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <form id="formInspeccionEmpleado">
+        <h1>Formulario de Inspección del Empleado</h1>
+
+        <!-- Reciclaje/Venta -->
+        <label>Destino del Dispositivo:</label>
+        <div style="display: flex; gap: 2rem; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="radio" id="reciclaje_si" name="reciclaje" value="1" checked>
+                Para Reciclar
+            </label>
+
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="radio" id="reciclaje_no" name="reciclaje" value="0">
+                Para Vender
+            </label>
+        </div>
+        <br><br>
+
+        <!-- Monto final -->
+        <label for="monto_final">Monto final:</label>
+        <input type="number" id="monto_final" name="monto_final" min="0" step="0.01" required>
+        <br><br>
+
+        <!-- Fecha de inspección -->
+        <label for="fecha_inspeccion">Fecha de inspección:</label>
+        <input type="date" id="fecha_inspeccion" name="fecha_inspeccion" required>
+        <br><br>
+
+        <!-- Botón de envío -->
+        <button id="inspeccionEmpleado" type="submit">Enviar</button>
+    </form>
+
+    <div id="resultado"></div>
+
+    <script>
+        // Función para cargar tipos de dispositivo
+        async function cargarTiposDispositivo() {
+            try {
+                const response = await fetch('../../services/inspeccion/api/getTiposDispositivos.php');
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+                const data = await response.json();
+                console.log("Tipos recibidos:", data);
+
+                const select = document.getElementById('tipoDispositivo');
+
+                if (data.tipos && data.tipos.length > 0) {
+                    data.tipos.forEach(tipo => {
+                        const option = new Option(tipo.nombre, tipo.id);
+                        select.add(option);
+                    });
+                } else {
+                    select.innerHTML = '<option value="">No hay tipos disponibles</option>';
+                }
+            } catch (error) {
+                console.error('Error al cargar tipos:', error);
+                document.getElementById('tipoDispositivo').innerHTML =
+                    '<option value="">Error al cargar tipos</option>';
+            }
+        }
+
+        // Función para cargar dispositivos por tipo
+        async function cargarDispositivos(tipoId) {
+            try {
+                const response = await fetch('../../services/inspeccion/api/getDispositivoPorTipo.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({ tipo_dispositivo_id: tipoId })
+                });
+
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+                const data = await response.json();
+                console.log("Dispositivos recibidos:", data);
+
+                const select = document.getElementById('dispositivo');
+                select.innerHTML = '<option value="">Selecciona un dispositivo</option>';
+
+                data.dispositivos.forEach(dispositivo => {
+                    const option = new Option(dispositivo.nombre, dispositivo.id_dispositivo);
+                    select.add(option);
+                });
+            } catch (error) {
+                console.error('Error al cargar dispositivos:', error);
+                const select = document.getElementById('dispositivo');
+                select.innerHTML = '<option value="">Error al cargar dispositivos</option>';
+            }
+        }
+
+        // Función para cargar sucursales
+        async function cargarSucursales() {
+            try {
+                const response = await fetch('../../services/inspeccion/api/getSucursales.php');
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+                const data = await response.json();
+                console.log("Sucursales recibidas:", data);
+
+                const select = document.getElementById('sucursal');
+
+                if (data.sucursales && data.sucursales.length > 0) {
+                    data.sucursales.forEach(sucursal => {
+                        const option = new Option(sucursal.nombre, sucursal.id_sucursal);
+                        select.add(option);
+                    });
+                } else {
+                    select.innerHTML = '<option value="">No hay sucursales disponibles</option>';
+                }
+            } catch (error) {
+                console.error('Error al cargar sucursales:', error);
+                document.getElementById('sucursal').innerHTML =
+                    '<option value="">Error al cargar sucursales</option>';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarTiposDispositivo();
+            cargarSucursales();
+
+            // Agrega listener para cuando cambie el tipo seleccionado
+            document.getElementById('tipoDispositivo').addEventListener('change', (e) => {
+                const tipoId = e.target.value;
+                if (tipoId) {
+                    cargarDispositivos(tipoId);
+                } else {
+                    document.getElementById('dispositivo').innerHTML =
+                        '<option value="">Selecciona un tipo primero</option>';
+                }
+            });
+        });
+
+        // Manejo del formulario de inspección
+        document.getElementById('formInspeccionEmpleado').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Validar campos requeridos
+            const requiredFields = ['reciclaje', 'monto_final', 'fecha_inspeccion'];
+            const formData = new FormData(this);
+
+            // Verificar que todos los campos requeridos estén presentes
+            for (const field of requiredFields) {
+                if (!formData.get(field)) {
+                    alert(`Falta completar el campo: ${field}`);
+                    return;
+                }
+            }
+
+            try {
+                // Mostrar datos que se enviarán (para debug)
+                console.log('Datos a enviar:', Object.fromEntries(formData));
+
+                const response = await fetch('../../services/inspeccion/api/guardarEmpleado.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                console.log('Respuesta del servidor:', result);
+
+                if (result.success || result.exito) {
+                    alert('Datos guardados correctamente');
+                    // Opcional: Resetear el formulario
+                    this.reset();
+                } else {
+                    alert(`Error: ${result.error || 'No se pudo guardar'}`);
+                }
+            } catch (error) {
+                console.error('Error en el envío:', error);
+                alert('Error de conexión con el servidor');
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>

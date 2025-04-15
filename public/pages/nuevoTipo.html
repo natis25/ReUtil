@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tipos de Dispositivo</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <style>
+        .form-container {
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn-submit {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .result-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <a href="#" class="titulo">Gestión de Dispositivos</a>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-opctions">Inicio</a>
+            <a href="#" class="nav-opctions">Tipos</a>
+            <a href="#" class="nav-opctions">Dispositivos</a>
+            <button class="btn-login">Login</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-container">
+            <h2>Registrar Nuevo Tipo de Dispositivo</h2>
+            <form id="tipoForm">
+                <div class="form-group">
+                    <label for="nombre_tipo">Nombre del Tipo:</label>
+                    <input type="text" id="nombre_tipo" required>
+                </div>
+                <button type="submit" class="btn-submit">Guardar</button>
+            </form>
+            <div id="resultado" class="result-message"></div>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = 'http://localhost/Reeutil/api/gateway.php?service=tipodispositivo';
+        const form = document.getElementById('tipoForm');
+        const nombreTipoInput = document.getElementById('nombre_tipo');
+        const resultDiv = document.getElementById('resultado');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nombreTipo = nombreTipoInput.value.trim();
+            if (!nombreTipo) {
+                showResult('Por favor ingrese un nombre válido', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ nombre_tipo: nombreTipo })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Error en la solicitud');
+                }
+
+                if (data.success) {
+                    showResult('Tipo creado exitosamente', 'success');
+                    form.reset();
+                } else {
+                    showResult(data.error || 'Error al crear el tipo', 'error');
+                }
+            } catch (error) {
+                showResult(error.message, 'error');
+                console.error('Error:', error);
+            }
+        });
+
+        function showResult(message, type) {
+            resultDiv.textContent = message;
+            resultDiv.style.color = type === 'error' ? '#dc3545' : '#28a745';
+            setTimeout(() => resultDiv.textContent = '', 3000);
+        }
+    </script>
+</body>
+</html>
