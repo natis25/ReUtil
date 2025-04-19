@@ -62,9 +62,15 @@
 
             <label style="display: flex; align-items: center; gap: 0.5rem;">
                 <input type="radio" id="trasferencia_no" name="trasferencia" value="0">
-                Cheque
+                QR
             </label>
         </div>
+        <div id="qrContainer" style="display: block; margin: 1rem 0; text-align: center;">
+            <h3>Escanea este código QR para pagar</h3>
+            <img src="images/Rickrolling_QR_code.png" alt="Código QR para pagos Logo">
+            <p>Escanea este código para completar tu pago</p>
+        </div>
+        
         <br><br>
 
         <button id="inspeccionCliente" type="submit">Enviar</button>
@@ -174,12 +180,39 @@
             cargarSucursales();
         });
 
+        const valorSeleccionado = document.querySelector('input[name="trasferencia"]:checked')?.value;
+            document.getElementById('qrContainer').style.display = (valorSeleccionado === "0") ? 'block' : 'none';
+
+            // Mostrar/ocultar el contenedor QR dependiendo de la forma de pago
+        document.querySelectorAll('input[name="trasferencia"]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const qrContainer = document.getElementById('qrContainer');
+                if (e.target.value === "0") {
+                    qrContainer.style.display = 'block'; // Mostrar QR
+                } else {
+                    qrContainer.style.display = 'none';  // Ocultar QR
+                }
+            });
+        });
+
+
         document.getElementById('formInspeccionCliente').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             // Validar campos requeridos
             const requiredFields = ['monto_ofrecido', 'trasferencia', 'id_dispositivo', 'id_sucursal'];
             const formData = new FormData(this);
+            const formaPago = formData.get('trasferencia');
+
+            if (formaPago === "0") {
+                const continuar = confirm("¿Ya escaneaste el código QR? Si es así, presiona 'Aceptar' para continuar con el envío.");
+
+                document.getElementById('qrContainer').style.display = 'block';
+
+                // Esperar confirmación antes de enviar (puedes omitir esto si no necesitas confirmación)
+                if (!continuar) return;
+            }
+            
 
             // Verificar que todos los campos requeridos estén presentes
             for (const field of requiredFields) {
@@ -188,6 +221,7 @@
                     return;
                 }
             }
+     
 
             try {
                 // Mostrar datos que se enviarán (para debug)
@@ -205,6 +239,7 @@
                     alert('Datos guardados correctamente');
                     // Opcional: Resetear el formulario
                     this.reset();
+                    document.getElementById('qrContainer').style.display = 'none'; // Oculta el QR luego de envío exitoso
                 } else {
                     alert(`Error: ${result.error || 'No se pudo guardar'}`);
                 }
