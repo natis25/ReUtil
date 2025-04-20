@@ -12,7 +12,7 @@ class InspeccionModel {
         $stmt = $this->conn->prepare("SELECT 
                 descripcion, 
                 monto_ofrecido, 
-                transferencia, 
+                trasferencia, 
                 reciclaje, 
                 monto_final, 
                 fecha_inspeccion 
