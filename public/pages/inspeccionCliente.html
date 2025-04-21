@@ -9,21 +9,6 @@
 </head>
 
 <body>
-    <nav>
-        <div class="logo">
-            <a href="inicio.php">
-                <img src="images/eco.png" alt="ReeUtil Logo">
-            </a>
-        </div>
-        <a class="titulo" href="inicio.php">ReeUtil</a>
-        <div class="nav-links">
-            <a class="nav-opctions" href="inicio.php">Inicio</a>
-            <a class="nav-opctions" href="#">Conoce más de ReeUtil</a>
-        </div>
-        <a href="login.html">
-            <button class="btn-login">Iniciar Sesión</button>
-        </a>
-    </nav>
     <form id="formInspeccionCliente">
         <h1>Solicitud de Inspección</h1>
 
@@ -33,9 +18,14 @@
             <!-- Aquí se llenarán los tipos de dispositivos -->
         </select>
 
+        <label for="marca">Marca:</label>
+        <select id="marca" name="marca" required>
+            <option value="">Seleccione una marca</option>
+        </select>
+
         <label>Dispositivo:</label>
         <select id="dispositivo" name="id_dispositivo" aria-label="Selecciona un dispositivo" required>
-            <option value="">Primero selecciona el tipo de dispositivo</option>
+            <option value="">Primero selecciona la marca del dispositivo</option>
             <!-- Aquí se llenarán los dispositivos según el tipo -->
         </select>
 
@@ -48,7 +38,7 @@
         <br><br>
 
         <label>Sucursal (en donde se hara la cotizacion):</label>
-        <select id="sucursal" name="id_sucursal"  aria-label="Selecciona una sucursal" required>
+        <select id="sucursal" name="id_sucursal" aria-label="Selecciona una sucursal" required>
             <option value="">Selecciona una Sucursal</option>
             <!-- Aquí se llenarán los tipos de dispositivos -->
         </select>
@@ -62,15 +52,9 @@
 
             <label style="display: flex; align-items: center; gap: 0.5rem;">
                 <input type="radio" id="trasferencia_no" name="trasferencia" value="0">
-                QR
+                Cheque
             </label>
         </div>
-        <div id="qrContainer" style="display: block; margin: 1rem 0; text-align: center;">
-            <h3>Escanea este código QR para pagar</h3>
-            <img src="images/Rickrolling_QR_code.png" alt="Código QR para pagos Logo">
-            <p>Escanea este código para completar tu pago</p>
-        </div>
-        
         <br><br>
 
         <button id="inspeccionCliente" type="submit">Enviar</button>
@@ -84,12 +68,13 @@
             try {
                 const response = await fetch('../../services/inspeccion/api/getTiposDispositivos.php');
                 if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-
+    
                 const data = await response.json();
                 console.log("Tipos recibidos:", data);
-
+    
                 const select = document.getElementById('tipoDispositivo');
-
+                select.innerHTML = '<option value="">Selecciona el tipo del dispositivo</option>';
+    
                 if (data.tipos && data.tipos.length > 0) {
                     data.tipos.forEach(tipo => {
                         const option = new Option(tipo.nombre, tipo.id);
@@ -104,64 +89,86 @@
                     '<option value="">Error al cargar tipos</option>';
             }
         }
-
-        // Función para cargar dispositivos por tipo
-        async function cargarDispositivos(tipoId) {
+    
+        // Función para cargar marcas por tipo
+        async function cargarMarcasPorTipo(tipoId) {
             try {
-                const response = await fetch('../../services/inspeccion/api/getDispositivoPorTipo.php', {
+                const response = await fetch('../../services/inspeccion/api/getMarcasPorTipo.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
                     body: new URLSearchParams({ tipo_dispositivo_id: tipoId })
                 });
-
+    
                 if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-
+    
+                const data = await response.json();
+                console.log("Marcas recibidas:", data);
+    
+                const select = document.getElementById('marca');
+                select.innerHTML = '<option value="">Selecciona la marca del dispositivo</option>';
+    
+                data.marcas.forEach(marca => {
+                    const option = new Option(marca.nombre, marca.id_marca);
+                    select.add(option);
+                });
+    
+                select.disabled = false;
+            } catch (error) {
+                console.error('Error al cargar marcas:', error);
+                const select = document.getElementById('marca');
+                select.innerHTML = '<option value="">Error al cargar marcas</option>';
+            }
+        }
+    
+        // Función para cargar dispositivos por tipo y marca
+        async function cargarDispositivos(tipoId, marcaId) {
+            try {
+                const response = await fetch('../../services/inspeccion/api/getDispositivoPorTipoYMarca.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        tipo_dispositivo_id: tipoId,
+                        marca_id: marcaId
+                    })
+                });
+    
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+    
                 const data = await response.json();
                 console.log("Dispositivos recibidos:", data);
-
+    
                 const select = document.getElementById('dispositivo');
                 select.innerHTML = '<option value="">Selecciona un dispositivo</option>';
-
+    
                 data.dispositivos.forEach(dispositivo => {
                     const option = new Option(dispositivo.nombre, dispositivo.id_dispositivo);
                     select.add(option);
                 });
+    
+                select.disabled = false;
             } catch (error) {
                 console.error('Error al cargar dispositivos:', error);
                 const select = document.getElementById('dispositivo');
                 select.innerHTML = '<option value="">Error al cargar dispositivos</option>';
             }
         }
-
-        // Cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarTiposDispositivo();
-
-            // Agrega listener para cuando cambie el tipo seleccionado
-            document.getElementById('tipoDispositivo').addEventListener('change', (e) => {
-                const tipoId = e.target.value;
-                if (tipoId) {
-                    cargarDispositivos(tipoId);
-                } else {
-                    document.getElementById('dispositivo').innerHTML =
-                        '<option value="">Selecciona un tipo primero</option>';
-                }
-            });
-        });
-
-        // Función para cargar tipos de dispositivo
+    
+        // Función para cargar sucursales
         async function cargarSucursales() {
             try {
                 const response = await fetch('../../services/inspeccion/api/getSucursales.php');
                 if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-
+    
                 const data = await response.json();
                 console.log("Sucursales recibidas:", data);
-
+    
                 const select = document.getElementById('sucursal');
-
+                select.innerHTML = '<option value="">Selecciona una sucursal</option>';
+    
                 if (data.sucursales && data.sucursales.length > 0) {
                     data.sucursales.forEach(sucursal => {
                         const option = new Option(sucursal.nombre, sucursal.id_sucursal);
@@ -176,70 +183,69 @@
                     '<option value="">Error al cargar sucursales</option>';
             }
         }
-        window.addEventListener('DOMContentLoaded', () => {
+    
+        // Eventos y listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarTiposDispositivo();
             cargarSucursales();
-        });
-
-        const valorSeleccionado = document.querySelector('input[name="trasferencia"]:checked')?.value;
-            document.getElementById('qrContainer').style.display = (valorSeleccionado === "0") ? 'block' : 'none';
-
-            // Mostrar/ocultar el contenedor QR dependiendo de la forma de pago
-        document.querySelectorAll('input[name="trasferencia"]').forEach(input => {
-            input.addEventListener('change', (e) => {
-                const qrContainer = document.getElementById('qrContainer');
-                if (e.target.value === "0") {
-                    qrContainer.style.display = 'block'; // Mostrar QR
-                } else {
-                    qrContainer.style.display = 'none';  // Ocultar QR
+    
+            const tipoSelect = document.getElementById('tipoDispositivo');
+            const marcaSelect = document.getElementById('marca');
+            const dispositivoSelect = document.getElementById('dispositivo');
+    
+            tipoSelect.addEventListener('change', (e) => {
+                const tipoId = e.target.value;
+                marcaSelect.innerHTML = '<option value="">Selecciona una marca</option>';
+                marcaSelect.disabled = true;
+                dispositivoSelect.innerHTML = '<option value="">Selecciona un dispositivo</option>';
+                dispositivoSelect.disabled = true;
+    
+                if (tipoId) {
+                    cargarMarcasPorTipo(tipoId);
+                }
+            });
+    
+            marcaSelect.addEventListener('change', (e) => {
+                const marcaId = e.target.value;
+                const tipoId = tipoSelect.value;
+    
+                dispositivoSelect.innerHTML = '<option value="">Selecciona un dispositivo</option>';
+                dispositivoSelect.disabled = true;
+    
+                if (tipoId && marcaId) {
+                    cargarDispositivos(tipoId, marcaId);
                 }
             });
         });
-
-
+    
+        // Envío del formulario
         document.getElementById('formInspeccionCliente').addEventListener('submit', async function (e) {
             e.preventDefault();
-
-            // Validar campos requeridos
+    
             const requiredFields = ['monto_ofrecido', 'trasferencia', 'id_dispositivo', 'id_sucursal'];
             const formData = new FormData(this);
-            const formaPago = formData.get('trasferencia');
-
-            if (formaPago === "0") {
-                const continuar = confirm("¿Ya escaneaste el código QR? Si es así, presiona 'Aceptar' para continuar con el envío.");
-
-                document.getElementById('qrContainer').style.display = 'block';
-
-                // Esperar confirmación antes de enviar (puedes omitir esto si no necesitas confirmación)
-                if (!continuar) return;
-            }
-            
-
-            // Verificar que todos los campos requeridos estén presentes
+    
             for (const field of requiredFields) {
                 if (!formData.get(field)) {
                     alert(`Falta completar el campo: ${field}`);
                     return;
                 }
             }
-     
-
+    
             try {
-                // Mostrar datos que se enviarán (para debug)
                 console.log('Datos a enviar:', Object.fromEntries(formData));
-
+    
                 const response = await fetch('../../services/inspeccion/api/guardarCliente.php', {
                     method: 'POST',
                     body: formData
                 });
-
+    
                 const result = await response.json();
                 console.log('Respuesta del servidor:', result);
-
+    
                 if (result.success || result.exito) {
                     alert('Datos guardados correctamente');
-                    // Opcional: Resetear el formulario
                     this.reset();
-                    document.getElementById('qrContainer').style.display = 'none'; // Oculta el QR luego de envío exitoso
                 } else {
                     alert(`Error: ${result.error || 'No se pudo guardar'}`);
                 }
@@ -248,9 +254,8 @@
                 alert('Error de conexión con el servidor');
             }
         });
-
-
     </script>
+    
 
 </body>
 
