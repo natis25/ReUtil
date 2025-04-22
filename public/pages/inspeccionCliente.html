@@ -67,7 +67,7 @@
         async function cargarTiposDispositivo() {
             try {
                 const response = await fetch('../../services/inspeccion/api/getTiposDispositivos.php');
-                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                if (!response.ok) throw new Error('Error HTTP: ${response.status}');
     
                 const data = await response.json();
                 console.log("Tipos recibidos:", data);
@@ -101,7 +101,7 @@
                     body: new URLSearchParams({ tipo_dispositivo_id: tipoId })
                 });
     
-                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                if (!response.ok) throw new Error('Error HTTP: ${response.status}');
     
                 const data = await response.json();
                 console.log("Marcas recibidas:", data);
@@ -136,7 +136,7 @@
                     })
                 });
     
-                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                if (!response.ok) throw new Error('Error HTTP: ${response.status}');
     
                 const data = await response.json();
                 console.log("Dispositivos recibidos:", data);
@@ -161,7 +161,7 @@
         async function cargarSucursales() {
             try {
                 const response = await fetch('../../services/inspeccion/api/getSucursales.php');
-                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                if (!response.ok) throw new Error('Error HTTP: ${response.status}');
     
                 const data = await response.json();
                 console.log("Sucursales recibidas:", data);
@@ -227,7 +227,7 @@
     
             for (const field of requiredFields) {
                 if (!formData.get(field)) {
-                    alert(`Falta completar el campo: ${field}`);
+                    alert('Falta completar el campo: ${field}');
                     return;
                 }
             }

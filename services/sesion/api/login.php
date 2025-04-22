@@ -1,13 +1,27 @@
-<!-- services/sesion/api/login.php -->
 <?php
+header('Content-Type: application/json');
+
 include_once('../../../core/conexion.php');
 include_once('../controllers/sesionController.php');
 
-$email = $_POST['email'];
-$password = $_POST['password'];
-$tipoUsuario = $_POST['tipo_usuario'];
+$response = ["success" => false, "error" => ""];
 
-// Creamos el controlador y le pasamos los datos
-$sesionController = new SesionController();
-$sesionController->iniciarSesion($email, $password, $tipoUsuario);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $tipoUsuario = $_POST['tipo_usuario'];
+
+    $sesionController = new SesionController();
+    
+    if ($sesionController->iniciarSesion($email, $password, $tipoUsuario)) {
+        $response["success"] = true;
+        $response["redirect"] = ($tipoUsuario == 'cliente') 
+            ? "../../../public/pages/menuCliente.html" 
+            : "../../../public/pages/menuEmpleado.html";
+    } else {
+        $response["error"] = "Credenciales incorrectas";
+    }
+}
+
+echo json_encode($response);
 ?>
