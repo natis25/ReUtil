@@ -41,7 +41,8 @@ $serviceMap = [
     'tipodispositivo' => 'tipoDispositivo/tipoDispositivoApi.php',
     'marca' => 'marca/api.php',
     'usuarios' => 'usuarios/api.php',
-    'productos' => 'productos/api.php'
+    'productos' => 'productos/api.php',
+    'criterio' => 'criterios/api.php'
 ];
 
 // Verificar si el servicio existe

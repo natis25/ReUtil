@@ -1,6 +1,6 @@
 <?php
 
-require_once(_DIR_ . '/../controller/guardarInspeccionEmpleadoController.php');
+require_once(__DIR__ . '/../controller/guardarInspeccionEmpleadoController.php');
 
 // Obtener los datos de reciclaje, monto final y fecha inspección
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -25,5 +25,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $controller->actualizarDatos($cliente_id, $reciclaje, $monto_final, $fecha_inspeccion);
     } else {
         echo json_encode(['error' => 'Faltan parámetros']);
-    }
+    }
 }

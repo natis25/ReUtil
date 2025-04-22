@@ -1,7 +1,7 @@
 <?php
 
-require_once(_DIR_ . '/../model/inspeccionEmpleado.php');
-header('Content-Type: application/json');
+require_once(__DIR__ . '/../model/inspeccionEmpleado.php');
+header(header: 'Content-Type: application/json');
 
 class guardarInspeccionEmpleadoController
 {
@@ -20,6 +20,6 @@ class guardarInspeccionEmpleadoController
             echo json_encode(['ok' => false, 'error' => $resultado['error']]);
         } else {
             echo json_encode(['ok' => true]);
-        }
-    }
+        }
+    }
 }

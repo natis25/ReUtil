@@ -1,37 +1,37 @@
 <?php
+require_once(__DIR__ . '/../../../core/Database.php');
 
 class CriterioModel {
-  private $conn;
+    private $conn;
 
-  // 1. Recibe la conexión por inyección de dependencias
-  public function __construct($conexion) {
-    $this->conn = $conexion;
-  }
+    public function __construct() {
+        $this->conn = Database::getConnection();
+    }
 
-  // Cambiar el nombre del método a 'obtenerCriterios()'
-  public function obtenerCriterios() {
-    $query = "SELECT * FROM criterio";
-    $result = $this->conn->query($query);
-    return $result->fetch_all(MYSQLI_ASSOC); // Devuelve todos los criterios en un arreglo asociativo
-  }
+    public function getAll() {
+        $stmt = $this->conn->query("SELECT * FROM Criterio");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
+    public function getById($id) {
+        $stmt = $this->conn->prepare("SELECT * FROM Criterio WHERE id_criterio = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-  public function crearCriterio($nombre) {
-    $stmt = $this->conn->prepare("INSERT INTO criterio (nombre_criterio) VALUES (?)");
-    $stmt->bind_param("s", $nombre);
-    return $stmt->execute();
-  }
+    public function create($nombre_criterio) {
+        $stmt = $this->conn->prepare("INSERT INTO Criterio (nombre_criterio) VALUES (?)");
+        $stmt->execute([$nombre_criterio]);
+        return $this->conn->lastInsertId(); // Retorna el ID autoincremental
+    }
 
-  public function actualizarCriterio($id, $nuevoNombre) {
-    $stmt = $this->conn->prepare("UPDATE criterio SET nombre_criterio = ? WHERE id_criterio = ?");
-    $stmt->bind_param("si", $nuevoNombre, $id);
-    return $stmt->execute();
-  }
+    public function update($id_criterio, $nombre_criterio) {
+        $stmt = $this->conn->prepare("UPDATE Criterio SET nombre_criterio = ? WHERE id_criterio = ?");
+        return $stmt->execute([$nombre_criterio, $id_criterio]);
+    }
 
-  public function eliminarCriterio($id) {
-    $stmt = $this->conn->prepare("DELETE FROM criterio WHERE id_criterio = ?");
-    $stmt->bind_param("i", $id);
-    return $stmt->execute();
-  }
+    public function delete($id_criterio) {
+        $stmt = $this->conn->prepare("DELETE FROM Criterio WHERE id_criterio = ?");
+        return $stmt->execute([$id_criterio]);
+    }
 }
-?>

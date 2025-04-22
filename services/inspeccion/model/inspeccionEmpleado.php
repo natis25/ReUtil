@@ -1,6 +1,6 @@
 <?php
 
-require_once(_DIR_ . '/../../../core/Conexion1.php');
+require_once(__DIR__ . '/../../../core/Conexion1.php');
 
 class Inspeccion
 {
@@ -66,6 +66,6 @@ class Inspeccion
         $stmt->close();
         $conn->close();
 
-        return ['ok' => true];
-    }
+        return ['ok' =>true];
+    }
 }
