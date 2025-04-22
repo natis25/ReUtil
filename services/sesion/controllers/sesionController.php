@@ -16,12 +16,14 @@ class SesionController {
 
       // Mostrar el mensaje según el tipo de usuario
       if ($tipoUsuario == 'cliente') {
-        echo "Ingresaste como Cliente";
+        header("Location: ../../../public/pages/menuCliente.html");
+        exit();
       } else {
-        echo "Ingresaste como Empleado";
+        header("Location: ../../../public/pages/menuEmpleado.html");
+        exit();
       }
     } else {
-      
+      // Credenciales incorrectas
       echo "Credenciales incorrectas.";
     }
   }

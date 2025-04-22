@@ -1,0 +1,15 @@
+Array
+(
+    [descripcion] => La bateria dura 30 minutos
+    [monto_ofrecido] => 150
+    [trasferencia] => 0
+    [id_dispositivo] => 1
+    [id_sucursal] => Calacoto
+    [caja_enviada] => 0
+    [revision] => 0
+    [reciclaje] => 0
+    [monto_final] => 0
+    [fecha_inspeccion] => 2025-04-15 02:31:09
+    [id_empleado] => 
+    [id_cliente] => 
+)

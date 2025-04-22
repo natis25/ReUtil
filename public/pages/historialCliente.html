@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+
+    <title>Mis Solicitudes</title>
+
+</head>
+<body>
+    <h1>Mis Cotizaciones</h1>
+    <table id="tablaInspecciones">
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th>Monto Ofrecido</th>
+                <th>Monto Final</th>
+                <th>Forma de Pago</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        // Cambia este valor según cómo gestiones el ID del cliente (sesión, etc.)
+        const clienteId = 1;
+
+        fetch(`../../services/historialCliente/api/getInspeccionesCliente.php?id_cliente=${clienteId}`)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#tablaInspecciones tbody');
+                if (data.inspecciones) {
+                    data.inspecciones.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${item.descripcion || ''}</td>
+                            <td>${item.monto_ofrecido}</td>
+                            <td>${item.monto_final ?? 'No definido'}</td>
+                            <td>${item.trasferencia == 1 ? 'Transferencia' : 'QR'}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5">No se encontraron registros</td></tr>';
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar inspecciones:', error);
+            });
+    </script>
+</body>
+</html>
