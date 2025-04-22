@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// URL de la API de criterios (ajusta según tu estructura real)
+// URL de la API de criterios
 $api_url = 'http://'.$_SERVER['HTTP_HOST'].'/Reeutil/services/criterios/api.php';
 
 
@@ -66,12 +66,9 @@ $criterios = is_array($criterios) ? $criterios : [];
         <h1>Gestión de Criterios</h1>
         <br>
         
-        <button 
-            class="btn-login"
-            onclick="abrirModal(null)"
-        >
-            Agregar Nuevo Criterio
-        </button>
+        <button class="btn-login" onclick="abrirModal(null)">Agregar Nuevo Criterio</button>
+        <a class="nav-opctions" href="criterio_tipo_dispositivo.php" style="font-weight: bold;">Asignar Criterios</a>
+
         <br>
         
         <div class="table-responsive">
@@ -118,7 +115,7 @@ $criterios = is_array($criterios) ? $criterios : [];
                             onclick="cerrarModal()"
                         ></button>
                     </div>
-                    <form id="criterioForm" action="guardarCriterio.php" method="post">
+                    <form id="criterioForm" action="guardarCriterio.php" method="POST">
                         <div class="modal-body">
                             <input type="hidden" id="id_criterio" name="id_criterio" value="">
                             <div class="mb-3">
