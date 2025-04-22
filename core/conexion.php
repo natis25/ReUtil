@@ -1,15 +1,35 @@
 <?php
-$servidor = "localhost";
-$usuario = "root";
-$contrasena = "";
-$basedatos = "reeutil";
+class Database {
+    // 1. Atributo estático para almacenar la única instancia
+    private static $instance = null;
+    private $connection;
 
-$conexion = new mysqli($servidor, $usuario, $contrasena, $basedatos);
+    // 2. Constructor privado (para evitar instancias externas)
+    private function __construct() {
+        $servidor = "localhost";
+        $usuario = "root";
+        $contrasena = "";
+        $basedatos = "reeutil";
 
-if ($conexion->connect_error) {
-    die("Error de conexión: " . $conexion->connect_error);
+        $this->connection = new mysqli($servidor, $usuario, $contrasena, $basedatos);
+
+        if ($this->connection->connect_error) {
+            die("Error de conexión: " . $this->connection->connect_error);
+        }
+
+        // Configurar charset (opcional)
+        $this->connection->set_charset("utf8");
+    }
+
+    // 3. Método estático para obtener la instancia
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new Database();
+        }
+        return self::$instance->connection;
+    }
 }
 
-// Opcional: Configurar el charset si es necesario
-$conexion->set_charset("utf8");
+// 4. Para compatibilidad con código existente (opcional)
+$conexion = Database::getInstance();
 ?>

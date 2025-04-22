@@ -1,11 +1,7 @@
 <!-- services/sesion/model/SesionModel.php -->
 <?php
 
-
-class SesionModel {
-  private $conn;
-
-  // opcion que funciona
+// opcion que funciona
   // public function __construct() 
   // {
   //   // Conexión a la base de datos
@@ -21,8 +17,9 @@ class SesionModel {
   //   }
   //   $this->conn = $conexion;
   // }
-
-  // Alternativa
+class SesionModel {
+  private $conn;
+  
   public function __construct() {
     include_once('../../../core/conexion.php');
     global $conexion;        // Usamos la variable como fue definida
