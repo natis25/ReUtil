@@ -87,7 +87,7 @@ echo "<!-- Asignaciones: " . count($asignaciones) . " registros -->";
             Nueva Asignación
         </button>
 
-        <a class="nav-opctions" href="criterios.php" style="font-weight: bold;">Asignar Criterios</a>
+        <a class="nav-opctions" href="criterios.php" style="font-weight: bold;">Gestionar Criterios</a>
         <br><br>
         
         <div class="table-responsive">
