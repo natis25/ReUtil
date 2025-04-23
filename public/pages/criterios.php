@@ -67,7 +67,7 @@ $criterios = is_array($criterios) ? $criterios : [];
         <br>
         
         <button class="btn-login" onclick="abrirModal(null)">Agregar Nuevo Criterio</button>
-        <a class="nav-opctions" href="criterio_tipo_dispositivo.php" style="font-weight: bold;">Asignar Criterios</a>
+        <a class="nav-opctions" href="criterioTipo.php" style="font-weight: bold;">Asignar Criterios</a>
 
         <br>
         
