@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Inspección del Empleado</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <form id="formInspeccionEmpleado">
+        <h1>Formulario de Inspección del Empleado</h1>
+
+        <div>
+            <label for="tipoDispositivo">Tipo de dispositivo:</label>
+            <select id="tipoDispositivo" name="tipo_dispositivo_id" required>
+                <option value="">Cargando tipos...</option>
+            </select>
+        </div>
+
+        <!-- Contenedor para los criterios -->
+        <div id="criteriosContainer" class="h4"></div>
+
+        <!-- Reciclaje/Venta -->
+        <label>Destino del Dispositivo:</label>
+        <div style="display: flex; gap: 2rem; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="radio" id="reciclaje_si" name="reciclaje" value="1" checked>
+                Para Reciclar
+            </label>
+
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="radio" id="reciclaje_no" name="reciclaje" value="0">
+                Para Vender
+            </label>
+        </div>
+        <br><br>
+
+        <!-- Monto final -->
+        <label for="monto_final">Monto final:</label>
+        <input type="number" id="monto_final" name="monto_final" min="0" step="0.01" required>
+        <br><br>
+
+        <!-- Fecha de inspección -->
+        <label for="fecha_inspeccion">Fecha de inspección:</label>
+        <input type="date" id="fecha_inspeccion" name="fecha_inspeccion" required>
+        <br><br>
+
+        <!-- Botón de envío -->
+        <a href="historialEmpleado.html">
+            <button type="submit">Enviar</button>
+        </a>
+
+    </form>
+
+    <div id="resultado"></div>
+
+    <script>
+        // Función para cargar los tipos de dispositivos
+        async function cargarTiposDispositivo() {
+            try {
+                const response = await fetch('../../services/inspeccion/api/getTiposDispositivos.php');
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+                const data = await response.json();
+                console.log("Tipos recibidos:", data);
+
+                const select = document.getElementById('tipoDispositivo');
+                select.innerHTML = '<option value="">Selecciona el tipo de dispositivo</option>';
+
+                if (data.tipos?.length > 0) {
+                    data.tipos.forEach(tipo => {
+                        select.add(new Option(tipo.nombre, tipo.id));
+                    });
+                } else {
+                    select.innerHTML = '<option value="">No hay tipos disponibles</option>';
+                }
+            } catch (error) {
+                console.error('Error al cargar tipos:', error);
+                document.getElementById('tipoDispositivo').innerHTML = '<option value="">Error al cargar tipos</option>';
+            }
+        }
+
+        async function cargarCriteriosPorTipo(tipoId) {
+            try {
+                const response = await fetch('../../services/inspeccion/api/getCriteriosPorTipo.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ tipo_dispositivo_id: tipoId })
+                });
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+                const data = await response.json();
+                console.log("Criterios recibidos:", data);
+
+                const contenedor = document.getElementById('criteriosContainer');
+                contenedor.innerHTML = ''; // Limpiar antes
+
+                if (data.criterios?.length > 0) {
+                    // Crear tabla
+                    const table = document.createElement('table');
+                    const thead = document.createElement('thead');
+                    const tbody = document.createElement('tbody');
+
+                    // Cabeceras de la tabla
+                    thead.innerHTML = `
+            <tr>
+                <th>Criterio</th>
+                <th>Cumple</th>
+            </tr>
+        `;
+                    table.appendChild(thead);
+
+                    // Filas de la tabla
+                    data.criterios.forEach(criterio => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                <td>${criterio.nombre_criterio}</td>
+                <td>
+                    <input type="checkbox" name="criterio_${criterio.id}" value="1" onclick="contarCriteriosCumplidos()">
+                </td>
+            `;
+                        tbody.appendChild(tr);
+                    });
+
+                    table.appendChild(tbody);
+                    contenedor.appendChild(table);
+
+                    // Mensaje para mostrar los criterios cumplidos
+                    const mensaje = document.createElement('div');
+                    mensaje.id = 'criteriosCumplidos';
+                    mensaje.style.marginTop = '20px';
+                    mensaje.style.fontWeight = 'bold';
+                    mensaje.style.color = 'green';
+                    mensaje.innerHTML = 'Criterios cumplidos: 0';
+                    contenedor.appendChild(mensaje);
+                } else {
+                    contenedor.innerHTML = '<p style="color:red"">No hay criterios definidos para este tipo de dispositivo.</p>';
+                }
+
+            } catch (error) {
+                console.error('Error al cargar criterios:', error);
+                const contenedor = document.getElementById('criteriosContainer');
+                contenedor.innerHTML = '<p>Error al cargar los criterios.</p>';
+            }
+        }
+
+        // Función para contar cuántos criterios están seleccionados
+        function contarCriteriosCumplidos() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            const mensaje = document.getElementById('criteriosCumplidos');
+            mensaje.innerHTML = `Criterios cumplidos: ${checkboxes.length}`;
+        }
+
+        // Llamada a cargar los tipos de dispositivo cuando se carga la página
+        cargarTiposDispositivo();
+
+        // Evento cuando se cambia el tipo de dispositivo
+        document.getElementById('tipoDispositivo').addEventListener('change', function () {
+            const tipoId = this.value;
+            cargarCriteriosPorTipo(tipoId);
+        });
+
+        // Validación de fecha para asegurarse de que no se pueda seleccionar una fecha pasada
+        document.getElementById('fecha_inspeccion').setAttribute('min', new Date().toISOString().split('T')[0]);
+
+        // Función para validar que la fecha de inspección no sea en el pasado
+        function validarFechaInspeccion() {
+            const fechaInspeccion = document.getElementById('fecha_inspeccion').value;
+            const fechaActual = new Date().toISOString().split('T')[0];
+            if (fechaInspeccion < fechaActual) {
+                alert("La fecha de inspección no puede ser en el pasado.");
+                return false;
+            }
+            return true;
+        }
+
+        // Función para validar el monto final
+        function validarMontoFinal() {
+            const montoFinal = parseFloat(document.getElementById('monto_final').value);
+            if (isNaN(montoFinal) || montoFinal <= 0) {
+                alert("El monto final debe ser un número positivo.");
+                return false;
+            }
+            return true;
+        }
+
+        // Función para manejar la validación del formulario antes de enviarlo
+        document.getElementById('formInspeccionEmpleado').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            if (!validarFechaInspeccion()) return;
+            if (!validarMontoFinal()) return;
+
+            const formData = new FormData(this);
+            const reciclaje = formData.get('reciclaje');
+            const montoFinal = formData.get('monto_final');
+            const fechaInspeccion = formData.get('fecha_inspeccion');
+
+            console.log('Reciclaje:', reciclaje);
+            console.log('Monto Final:', montoFinal);
+            console.log('Fecha Inspección:', fechaInspeccion);
+
+            if (!reciclaje || !montoFinal || !fechaInspeccion) {
+                alert('Por favor, complete todos los campos requeridos.');
+                return;
+            }
+
+            try {
+                console.log('Datos a enviar:', Object.fromEntries(formData));
+
+                const response = await fetch('../../services/inspeccion/api/guardarEmpleado.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                console.log('Respuesta del servidor:', result);
+
+                if (result.ok) {
+                    alert('Datos guardados correctamente');
+                    this.reset();
+                } else {
+                    alert(`Error: ${result.error || 'No se pudo guardar'}`);
+                }
+            } catch (error) {
+                console.error('Error en el envío:', error);
+                alert('Error de conexión con el servidor');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

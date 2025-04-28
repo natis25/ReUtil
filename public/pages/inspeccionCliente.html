@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Inspección del Cliente</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+
+<body>
+    <form id="formInspeccionCliente">
+        <h1>Solicitud de Inspección</h1>
+
+        <div>
+            <label for="tipoDispositivo">Tipo de dispositivo:</label>
+            <select id="tipoDispositivo" name="tipo_dispositivo_id" required>
+                <option value="">Cargando tipos...</option>
+            </select>
+        </div>
+
+
+
+        <div>
+            <label for="marca">Marca:</label>
+            <select id="marca" name="marca_id" required disabled>
+                <option value="">Selecciona un tipo primero</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="dispositivo">Dispositivo:</label>
+            <select id="dispositivo" name="id_dispositivo" required disabled>
+                <option value="">Selecciona una marca primero</option>
+            </select>
+        </div>
+
+        <label for="descripcion">Descripción (opcional):</label><br>
+        <textarea id="descripcion" name="descripcion" rows="3" cols="40"></textarea>
+        <br><br>
+
+        <div>
+            <label for="sucursal">Sucursal:</label>
+            <select id="sucursal" name="id_sucursal" required>
+                <option value="">Cargando sucursales...</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="monto_ofrecido">Monto ofrecido:</label>
+            <input type="number" id="monto_ofrecido" name="monto_ofrecido" required min="1" step="0.01">
+        </div>
+
+        <label>Forma de pago:</label>
+        <div style="display: flex; gap: 2rem; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="radio" id="trasferencia_si" name="trasferencia" value="1" checked>
+                Trasferencia
+            </label>
+
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="radio" id="trasferencia_no" name="trasferencia" value="0">
+                QR
+            </label>
+        </div>
+        <br><br>
+
+        <!-- Botón de envío -->
+        <a href="historialCliente.html">
+            <button type="submit">Enviar</button>
+        </a>
+
+    </form>
+
+    <div id="resultado"></div>
+
+    <script>
+        async function cargarTiposDispositivo() {
+            try {
+                const response = await fetch('../../services/inspeccion/api/getTiposDispositivos.php');
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+                const data = await response.json();
+                console.log("Tipos recibidos:", data);
+
+                const select = document.getElementById('tipoDispositivo');
+                select.innerHTML = '<option value="">Selecciona el tipo de dispositivo</option>';
+
+                if (data.tipos?.length > 0) {
+                    data.tipos.forEach(tipo => {
+                        select.add(new Option(tipo.nombre, tipo.id));
+                    });
+                } else {
+                    select.innerHTML = '<option value="">No hay tipos disponibles</option>';
+                }
+            } catch (error) {
+                console.error('Error al cargar tipos:', error);
+                document.getElementById('tipoDispositivo').innerHTML = '<option value="">Error al cargar tipos</option>';
+            }
+        }
+
+        async function cargarMarcasPorTipo(tipoId) {
+            try {
+                const response = await fetch('../../services/inspeccion/api/getMarcasPorTipo.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ tipo_dispositivo_id: tipoId })
+                });
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+                const data = await response.json();
+                console.log("Marcas recibidas:", data);
+
+                const select = document.getElementById('marca');
+                select.innerHTML = '<option value="">Selecciona la marca del dispositivo</option>';
+
+                if (data.marcas?.length > 0) {
+                    data.marcas.forEach(marca => {
+                        select.add(new Option(marca.marca, marca.id_marca));
+                    });
+                    select.disabled = false;
+                } else {
+                    select.innerHTML = '<option value="">No hay marcas disponibles</option>';
+                    select.disabled = true;
+                }
+            } catch (error) {
+                console.error('Error al cargar marcas:', error);
+                const select = document.getElementById('marca');
+                select.innerHTML = '<option value="">Error al cargar marcas</option>';
+                select.disabled = true;
+            }
+        }
+
+        async function cargarDispositivos(marcaId, tipoId) {
+            try {
+                const response = await fetch('../../services/inspeccion/api/getModelosPorMarcaYTipo.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ marca_dispositivo_id: marcaId, tipo_dispositivo_id: tipoId })
+                });
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+                // Para verificar los datos enviados
+                console.log('Datos enviados:', { marca_dispositivo_id: marcaId, tipo_dispositivo_id: tipoId });
+
+                const data = await response.json();
+                console.log("Dispositivos recibidos:", data);
+
+                const select = document.getElementById('dispositivo');
+                select.innerHTML = '<option value="">Selecciona un dispositivo</option>';
+
+                if (data.dispositivos?.length > 0) {
+                    data.dispositivos.forEach(dispositivo => {
+                        select.add(new Option(dispositivo.nombre, dispositivo.id_dispositivo));
+                    });
+                    select.disabled = false;
+                } else {
+                    select.innerHTML = '<option value="">No hay dispositivos disponibles</option>';
+                    select.disabled = true;
+                }
+            } catch (error) {
+                console.error('Error al cargar dispositivos:', error);
+                const select = document.getElementById('dispositivo');
+                select.innerHTML = '<option value="">Error al cargar dispositivos</option>';
+                select.disabled = true;
+            }
+        }
+
+        async function cargarSucursales() {
+            try {
+                const response = await fetch('../../services/inspeccion/api/getSucursales.php');
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+                const data = await response.json();
+                console.log("Sucursales recibidas:", data);
+
+                const select = document.getElementById('sucursal');
+                select.innerHTML = '<option value="">Selecciona una sucursal</option>';
+
+                if (data.sucursales?.length > 0) {
+                    data.sucursales.forEach(sucursal => {
+                        select.add(new Option(sucursal.nombre, sucursal.id_sucursal));
+                    });
+                } else {
+                    select.innerHTML = '<option value="">No hay sucursales disponibles</option>';
+                }
+            } catch (error) {
+                console.error('Error al cargar sucursales:', error);
+                document.getElementById('sucursal').innerHTML = '<option value="">Error al cargar sucursales</option>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await cargarTiposDispositivo();
+            await cargarSucursales();
+
+            const tipoSelect = document.getElementById('tipoDispositivo');
+            const marcaSelect = document.getElementById('marca');
+            const dispositivoSelect = document.getElementById('dispositivo');
+
+            // Si ya hay un tipo seleccionado al cargar la página, cargar marcas
+            const tipoIdInicial = tipoSelect.value;
+            if (tipoIdInicial) {
+                await cargarMarcasPorTipo(tipoIdInicial);
+
+                // Si además ya hay una marca seleccionada, cargar dispositivos
+                const marcaIdInicial = marcaSelect.value;
+                if (marcaIdInicial) {
+                    await cargarDispositivos(marcaIdInicial, tipoIdInicial);
+                }
+            }
+
+            tipoSelect.addEventListener('change', async (e) => {
+                const tipoId = e.target.value;
+                marcaSelect.innerHTML = '<option value="">Selecciona una marca</option>';
+                marcaSelect.disabled = true;
+                dispositivoSelect.innerHTML = '<option value="">Selecciona un dispositivo</option>';
+                dispositivoSelect.disabled = true;
+
+                if (tipoId) {
+                    await cargarMarcasPorTipo(tipoId);
+                }
+            });
+
+            marcaSelect.addEventListener('change', async (e) => {
+                const marcaId = e.target.value;
+                const tipoId = tipoSelect.value;
+
+                dispositivoSelect.innerHTML = '<option value="">Selecciona un dispositivo</option>';
+                dispositivoSelect.disabled = true;
+
+                if (tipoId && marcaId) {
+                    await cargarDispositivos(marcaId, tipoId);
+                }
+            });
+        });
+
+        document.getElementById('formInspeccionCliente').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            // Validaciones extra
+            if (!formData.get('id_dispositivo') || !formData.get('id_sucursal') || !formData.get('monto_ofrecido')) {
+                alert('Por favor completa todos los campos requeridos.');
+                return;
+            }
+
+            // Como "trasferencia" viene de un radio, aseguramos su valor manualmente
+            const trasferenciaValue = document.querySelector('input[name="trasferencia"]:checked')?.value;
+            if (!trasferenciaValue) {
+                alert('Por favor selecciona una forma de pago.');
+                return;
+            }
+            formData.set('trasferencia', trasferenciaValue);
+
+            try {
+                console.log('Datos a enviar:', Object.fromEntries(formData));
+
+                const response = await fetch('../../services/inspeccion/api/guardarCliente.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                console.log('Respuesta del servidor:', result);
+
+                if (result.success || result.exito) {
+                    alert('Datos guardados correctamente');
+                    this.reset();
+                } else {
+                    alert(`Error: ${result.error || 'No se pudo guardar'}`);
+                }
+            } catch (error) {
+                console.error('Error en el envío:', error);
+                alert('Error de conexión con el servidor.');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
