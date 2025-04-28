@@ -13,7 +13,11 @@ class InspeccionController {
             case 'GET':
                 if (isset($data['empleado_id'])) {
                     echo json_encode($this->model->getByEmpleadoId($data['empleado_id']));
-                } else {
+                }
+                elseif (isset($data['sucursal_id'])) {
+                    echo json_encode($this->model->getInspeccionesPendientes($data['sucursal_id']));
+                } 
+                else {
                     http_response_code(400);
                     echo json_encode(['error' => 'Se requiere el ID del empleado']);
                 }
