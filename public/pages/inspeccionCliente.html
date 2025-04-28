@@ -219,7 +219,8 @@
                 if (tipoId) {
                     await cargarMarcasPorTipo(tipoId);
                 }
-            });
+            }
+            );
 
             marcaSelect.addEventListener('change', async (e) => {
                 const marcaId = e.target.value;
@@ -239,19 +240,21 @@
 
             const formData = new FormData(this);
 
-            // Validaciones extra
-            if (!formData.get('id_dispositivo') || !formData.get('id_sucursal') || !formData.get('monto_ofrecido')) {
+            const idDispositivo = document.getElementById('dispositivo').value;
+            const idSucursal = document.getElementById('sucursal').value;
+            const montoOfrecido = document.getElementById('monto_ofrecido')?.value; // asegúrate que exista el input monto_ofrecido
+            const transferencia = document.querySelector('input[name="trasferencia"]:checked')?.value;
+
+            if (!idDispositivo || !idSucursal || !montoOfrecido || !transferencia) {
                 alert('Por favor completa todos los campos requeridos.');
                 return;
             }
 
-            // Como "trasferencia" viene de un radio, aseguramos su valor manualmente
-            const trasferenciaValue = document.querySelector('input[name="trasferencia"]:checked')?.value;
-            if (!trasferenciaValue) {
-                alert('Por favor selecciona una forma de pago.');
-                return;
-            }
-            formData.set('trasferencia', trasferenciaValue);
+            // Añadir los datos manualmente al FormData
+            formData.set('id_dispositivo', idDispositivo);
+            formData.set('id_sucursal', idSucursal);
+            formData.set('monto_ofrecido', montoOfrecido);
+            formData.set('trasferencia', transferencia);
 
             try {
                 console.log('Datos a enviar:', Object.fromEntries(formData));

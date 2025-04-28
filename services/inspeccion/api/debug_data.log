@@ -1,15 +1,16 @@
 Array
 (
-    [descripcion] => ta bonito
-    [monto_ofrecido] => 1592
-    [trasferencia] => 0
-    [id_dispositivo] => 1
-    [id_sucursal] => Sucursal Este
+    [descripcion] => no tiene las teclas de volumen
+    [monto_ofrecido] => 630
+    [trasferencia] => 1
+    [id_dispositivo] => 5
+    [id_sucursal] => Sucursal Oeste
     [caja_enviada] => 0
     [revision] => 0
     [reciclaje] => 0
     [monto_final] => 0
-    [fecha_inspeccion] => 2025-04-28 21:22:14
+    [fecha_inspeccion] => 2025-04-28 22:33:00
     [id_empleado] => 
     [id_cliente] => 
+    [Sucursal_id_sucursal] => 
 )

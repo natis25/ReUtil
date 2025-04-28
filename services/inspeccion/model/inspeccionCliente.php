@@ -50,7 +50,7 @@ class InspeccionCliente
             $data['id_empleado'],
             $data['id_dispositivo'],
             $data['id_cliente'],
-            $data['id_sucursal']
+            $data['Sucursal_id_sucursal']
         );
 
         file_put_contents('debug_data.log', print_r($data, true));
