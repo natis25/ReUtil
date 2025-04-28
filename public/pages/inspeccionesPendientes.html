@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspecciones pendientes</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <style>
+        /* Estilos adicionales para el botón */
+        .btn-iniciar {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-iniciar:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">
+            <a href="#" class="titulo">Inspecciones pendientes </a>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-opctions">Inicio</a>
+            <a href="#" class="nav-opctions">Historial</a>
+            <button class="btn-login">Login</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Historial de Inspecciones</h1>
+        <div class="filtros">
+            <label for="sucursalId">ID de la sucursal:</label>
+            <input type="number" id="sucursalId" placeholder="Ingrese ID de sucursal">
+            <button id="btnBuscar" class="btn-submit">Buscar</button>
+        </div>
+
+        <table id="inspeccionesTable">
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th>Monto Ofrecido</th>
+                    <th>Inicio Inspeccion</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const apiUrl = 'http://localhost/Reeutil/api/gateway.php?service=inspeccionga';
+        const inspeccionesTable = document.querySelector('#inspeccionesTable tbody');
+        const btnBuscar = document.getElementById('btnBuscar');
+        const sucursalIdInput = document.getElementById('sucursalId');
+
+        // Cargar inspecciones al hacer clic en Buscar
+        btnBuscar.addEventListener('click', loadInspecciones);
+
+        // Función para cargar las inspecciones
+        async function loadInspecciones() {
+            const sucursalId = sucursalIdInput.value.trim();
+
+            if (!sucursalId) {
+                alert('Por favor ingrese un ID de la sucursal');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}&sucursal_id=${sucursalId}`);
+                if (!response.ok) {
+                    throw new Error('Error al obtener los datos');
+                }
+                const data = await response.json();
+
+                inspeccionesTable.innerHTML = '';
+
+                if (data.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="6" style="text-align: center;">No se encontraron inspecciones para esta sucursal</td>`;
+                    inspeccionesTable.appendChild(row);
+                    return;
+                }
+
+                data.forEach(inspeccion => {
+                    const row = document.createElement('tr');
+
+                    // Formatear los datos para mostrar
+
+                    const montoOfrecido = `<span class="monto">$${parseFloat(inspeccion.monto_ofrecido).toFixed(2)}</span>`;
+
+
+                    row.innerHTML = `
+                        <td>${inspeccion.descripcion}</td>
+                        <td>${montoOfrecido}</td>
+                        <td>
+                            <button class="btn-iniciar" onclick="iniciarInspeccion(${inspeccion.id_inspeccion})">
+                                Iniciar
+                            </button> 
+                        </td>
+                    `;
+                    inspeccionesTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                inspeccionesTable.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #dc3545;">
+                            Error al cargar los datos: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        // Función para manejar el clic en "Iniciar"
+        function iniciarInspeccion(idInspeccion) {
+            if (confirm('¿Desea iniciar esta inspección?')) {
+                console.log('Iniciando inspección con ID:', idInspeccion);
+                localStorage.setItem('id_inspeccion', idInspeccion);
+                // Aquí puedes agregar la lógica para redirigir o hacer una petición API
+                // Ejemplo: window.location.href = `formulario_inspeccion.html?id=${idInspeccion}`;
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -269,7 +269,7 @@ button:hover {
     text-align: center;
     margin-top: 20px;
     font-weight: bold;
-    color: #2f1a01;
+    color: #012A2F;
 }
 
 /* Responsive */
@@ -283,3 +283,4 @@ button:hover {
         gap: 10px;
     }
 }
+

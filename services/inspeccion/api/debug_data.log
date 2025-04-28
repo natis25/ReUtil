@@ -1,15 +1,15 @@
 Array
 (
-    [descripcion] => ta bonito y chuquito
-    [monto_ofrecido] => 1
+    [descripcion] => ta bonito
+    [monto_ofrecido] => 1592
     [trasferencia] => 0
-    [id_dispositivo] => 5
-    [id_sucursal] => Sucursal Sur
+    [id_dispositivo] => 1
+    [id_sucursal] => Sucursal Este
     [caja_enviada] => 0
     [revision] => 0
     [reciclaje] => 0
     [monto_final] => 0
-    [fecha_inspeccion] => 2025-04-28 20:19:46
+    [fecha_inspeccion] => 2025-04-28 21:22:14
     [id_empleado] => 
     [id_cliente] => 
 )
