@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/../model/DispositivoModel.php');
+require_once(__DIR__ . '/../model/dispositivoModel.php');
 
 class DispositivoController {
     private $model;

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +7,8 @@
     <link rel="stylesheet" href="../static/style.css">
     <style>
         /* Estilos adicionales para el botón */
-        .btn-iniciar {
+         /* Estilos para los botones */
+         .btn-iniciar {
             background-color: #28a745;
             color: white;
             border: none;
@@ -16,17 +16,57 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
+        
         .btn-iniciar:hover {
             background-color: #218838;
         }
+        
+        .btn-enviar {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-enviar:hover {
+            background-color: #138496;
+        }
+        
+        .btn-disabled {
+            background-color: #6c757d;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.65;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-enviada {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .status-pendiente {
+            background-color: #ffc107;
+            color: #212529;
+        }
     </style>
 </head>
-
 <body>
     <nav>
         <div class="logo">
-            <a href="#" class="titulo">Inspecciones pendientes </a>
+            <a href="#" class="titulo">Inspecciones pendientes  </a>
         </div>
         <div class="nav-links">
             <a href="#" class="nav-opctions">Inicio</a>
@@ -42,12 +82,14 @@
             <input type="number" id="sucursalId" placeholder="Ingrese ID de sucursal">
             <button id="btnBuscar" class="btn-submit">Buscar</button>
         </div>
-
+        
         <table id="inspeccionesTable">
             <thead>
                 <tr>
                     <th>Descripción</th>
                     <th>Monto Ofrecido</th>
+                    <th>Estado Caja</th>
+                    <th>Enviar caja</th>
                     <th>Inicio Inspeccion</th>
                 </tr>
             </thead>
@@ -67,7 +109,7 @@
         // Función para cargar las inspecciones
         async function loadInspecciones() {
             const sucursalId = sucursalIdInput.value.trim();
-
+            
             if (!sucursalId) {
                 alert('Por favor ingrese un ID de la sucursal');
                 return;
@@ -79,32 +121,41 @@
                     throw new Error('Error al obtener los datos');
                 }
                 const data = await response.json();
-
+                
                 inspeccionesTable.innerHTML = '';
-
+                
                 if (data.length === 0) {
                     const row = document.createElement('tr');
                     row.innerHTML = `<td colspan="6" style="text-align: center;">No se encontraron inspecciones para esta sucursal</td>`;
                     inspeccionesTable.appendChild(row);
                     return;
                 }
-
+                
                 data.forEach(inspeccion => {
                     const row = document.createElement('tr');
-
+                    
                     // Formatear los datos para mostrar
-
+                                       
                     const montoOfrecido = `<span class="monto">$${parseFloat(inspeccion.monto_ofrecido).toFixed(2)}</span>`;
+                    
+                    const estadoCaja = inspeccion.caja_enviada ? 
+                        '<span class="status-badge status-enviada">Enviada</span>' : 
+                        '<span class="status-badge status-pendiente">Pendiente</span>';
 
-
+                    const btnEnviar = inspeccion.caja_enviada ?
+                        `<button class="btn-disabled" disabled>Enviado</button>` :
+                        `<button class="btn-enviar" onclick="enviar(${inspeccion.id_inspeccion})">Enviar</button>`;
+                    
+                     const btnIniciar = inspeccion.caja_enviada ?
+                        `<button class="btn-iniciar" onclick="iniciarInspeccion(${inspeccion.id_inspeccion})">Iniciar</button>` :
+                        `<button class="btn-disabled" disabled>Esperando caja</button>`;  
+                      
                     row.innerHTML = `
                         <td>${inspeccion.descripcion}</td>
                         <td>${montoOfrecido}</td>
-                        <td>
-                            <button class="btn-iniciar" onclick="iniciarInspeccion(${inspeccion.id_inspeccion})">
-                                Iniciar
-                            </button> 
-                        </td>
+                        <td>${estadoCaja}</td>
+                        <td>${btnEnviar}</td>
+                        <td>${btnIniciar}</td>
                     `;
                     inspeccionesTable.appendChild(row);
                 });
@@ -126,9 +177,39 @@
                 localStorage.setItem('id_inspeccion', idInspeccion);
                 // Aquí puedes agregar la lógica para redirigir o hacer una petición API
                 // Ejemplo: window.location.href = `formulario_inspeccion.html?id=${idInspeccion}`;
+                
             }
         }
+        async function enviar(idInspeccion) {
+    if (!confirm('¿Desea marcar esta caja como enviada?')) return;
+    
+    try {
+        const response = await fetch('http://localhost/Reeutil/api/gateway.php?service=inspeccionga', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id_inspeccion: idInspeccion
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Error al actualizar el estado de la caja');
+        }
+        
+        const result = await response.json();
+        if (result.success) {
+            alert('Estado de la caja actualizado correctamente');
+            loadInspecciones(); // Recargar la tabla
+        } else {
+            throw new Error(result.message || 'No se pudo actualizar el estado');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al actualizar: ' + error.message);
+    }
+}
     </script>
 </body>
-
 </html>

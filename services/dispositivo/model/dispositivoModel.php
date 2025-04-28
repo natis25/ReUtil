@@ -9,12 +9,27 @@ class DispositivoModel {
     }
 
     public function getAll() {
-        $query = "SELECT d.*, m.marca as nombre_marca, t.tipo as nombre_tipo 
+        $query = "SELECT 
+                    d.id_dispositivo,
+                    d.modelo,
+                    d.Tipo_dispositivo_id_tipo,
+                    d.Marca_id_marca,
+                    m.marca AS nombre_marca,
+                    t.nombre_tipo AS nombre_tipo
                   FROM dispositivo d
                   LEFT JOIN marca m ON d.Marca_id_marca = m.id_marca
                   LEFT JOIN tipo_dispositivo t ON d.Tipo_dispositivo_id_tipo = t.id_tipo";
-        $stmt = $this->conn->query($query);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        try {
+            $stmt = $this->conn->query($query);
+            if (!$stmt) {
+                throw new Exception("Error en la consulta: " . implode(" ", $this->conn->errorInfo()));
+            }
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error en DispositivoModel->getAll(): " . $e->getMessage());
+            return []; // Retorna array vacío en caso de error
+        }
     }
 
     public function getById($id) {
